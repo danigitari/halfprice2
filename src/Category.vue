@@ -187,9 +187,9 @@ export default {
     function getCategories() {
       axios
         .get("https://halfpricedbooks.co.ke/pos/booksApi/api/categories.php")
-        .then((res) => {
+    .then((res) => {
           categories.value = res.data;
-          console.log("responseData", categories.value);
+        //   console.log("responseData", categories.value);
         })
         .catch((err) => {
           console.log(err);
