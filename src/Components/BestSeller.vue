@@ -1,13 +1,15 @@
 <template>
-  <li v-for="bestSeller in bestSellers"
+  
+  <li
+    v-for="bestSeller in bestSellers || []" :key="bestSeller.id"
     class="product-style-default product type-product post-111 status-publish first instock product_cat-action-adventure product_cat-activity-books product_cat-contemporary product_cat-cultural product_tag-books product_tag-fiction product_tag-romance-contemporary has-post-thumbnail featured virtual purchasable product-type-simple"
   >
     <div class="product-block">
       <div class="product-transition">
         <!-- @if ($bestseller['image'] == null) -->
-        <div class="product-image" v-if="!bestSeller.image">
+        <div class="product-image" v-if="!bestSeller?.image">
           <img
-            src="{{ asset('images/placeholder.png') }}"
+            src="images/placeholder.png"
             class="attachment-shop_catalog size-shop_catalog"
             alt=""
             decoding="async"
@@ -17,7 +19,7 @@
 
         <div class="product-image" v-else>
           <img
-            :src="bestSeller.image"
+            :src="bestSeller?.image"
             class="attachment-shop_catalog size-shop_catalog"
             alt=""
             decoding="async"
@@ -33,7 +35,7 @@
       </div>
       <div class="product-caption">
         <h3 class="woocommerce-loop-product__title">
-          <a href="/book/"> {{  bestSeller.name  }}</a>
+          <a href="/book/"> {{ bestSeller?.name }}</a>
         </h3>
         <div class="count-review">
           <div class="star-rating" role="img" aria-label="Rated 4.40 out of 5">
@@ -46,28 +48,23 @@
           <span>5</span>
         </div>
         <div class="woocommerce-loop-product__author">
-        
-                            <a href="#" v-if="!bestSeller.author">Author Unavailable</a>
-              
-          <a href="#" v-else>{{ bestSeller.author }}</a>
+          <a href="#" v-if="bestSeller?.author"> {{ bestSeller?.author }} </a>
+
+          <a href="#" v-else> Author Unavailable </a>
           <!-- @endif -->
         </div>
         <span class="price">
           <span class="woocommerce-Price-amount amount">
             <bdi
               ><span class="woocommerce-Price-currencySymbol">KES </span
-              >{{ parseFloat(bestSeller.price).toFixed(2) }}</bdi
+              >{{ bestSeller?.price }}</bdi
             >
           </span>
         </span>
         <!-- @if($bestseller['stock'] >= 1) -->
         <form method="POST" action="{{ route('cart.add') }}">
           <!-- @csrf -->
-          <input
-            type="hidden"
-            name="product_id"
-            value="{{ $bestseller['id'] }}"
-          />
+          <input type="hidden" name="product_id" :value="bestSeller?.id" />
           <input type="hidden" name="quantity" value="1" />
           <button type="submit">Add to Cart</button>
         </form>
@@ -77,6 +74,7 @@
       </div>
     </div>
   </li>
+
 </template>
 
 <script>
@@ -89,19 +87,21 @@ export default {
     });
 
     const bestSellers = ref([]);
-   async function getBestSeller() {
+    function getBestSeller() {
       axios
         .get("https://halfpricedbooks.co.ke/pos/booksApi/api/best_seller.php")
         .then((response) => {
-         bestSellers.value = response.data.result;
+          bestSellers.value = response.data.result;
           console.log(response.data);
           console.log(bestSellers.value);
+          
         });
     }
 
     return {
       bestSellers,
       getBestSeller,
+      
     };
   },
 };

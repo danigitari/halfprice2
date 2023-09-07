@@ -21,7 +21,7 @@ const routes = [
         component: Home
 
     },
-    { path: '/best-seller-books', name: 'best-seller-books' , component: () => import('../Components/BestSellerBook.vue') },
+    { path: '/best-seller', name: 'best-seller' , component: () => import('../Components/BestSeller.vue') },
 ]
 
 const router = createRouter({

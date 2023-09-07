@@ -1,5 +1,5 @@
 <template>
-  <body
+  <body v-if="bestSellers"
     class="home page-template page-template-template-homepage page-template-template-homepage-php page page-id-210 wp-custom-logo wp-embed-responsive theme-bookory woocommerce-no-js ehf-header ehf-footer ehf-template-bookory ehf-stylesheet-bookory-child woo-variation-swatches wvs-behavior-blur wvs-theme-bookory-child wvs-show-label wvs-tooltip gecko woocommerce-active product-block-style-1 elementor-default elementor-kit-6 elementor-page elementor-page-210"
   >
     <Header />
@@ -348,7 +348,7 @@
                         data-element_type="widget"
                         data-widget_type="bookory-products.default"
                       >
-                        <div class="elementor-widget-container">
+                        <div class="elementor-widget-container " v-if="bestSellers">
                           <div class="woocommerce columns-1">
                             <div
                               class="woocommerce-carousel"
@@ -356,8 +356,124 @@
                             >
                               <ul class="products columns-1">
                                 <!-- <x-best-seller /> -->
-                                <BestSeller/>
-                          
+
+                                <li
+                                  v-for="bestSeller in bestSellers "
+                                  :key="bestSeller.id"
+                                  class="product-style-default product type-product post-111 status-publish first instock product_cat-action-adventure product_cat-activity-books product_cat-contemporary product_cat-cultural product_tag-books product_tag-fiction product_tag-romance-contemporary has-post-thumbnail featured virtual purchasable product-type-simple"
+                                >
+                                  <div class="product-block">
+                                    <div class="product-transition">
+                                      <!-- @if ($bestseller['image'] == null) -->
+                                      <div
+                                        class="product-image"
+                                        v-if="!bestSeller?.image"
+                                      >
+                                        <img
+                                          src="images/placeholder.png"
+                                          class="attachment-shop_catalog size-shop_catalog"
+                                          alt=""
+                                          decoding="async"
+                                          style="
+                                            height: 264.44px;
+                                            width: 188.89px;
+                                            object-fit: cover;
+                                          "
+                                        />
+                                      </div>
+
+                                      <div class="product-image" v-else>
+                                        <img
+                                          :src="bestSeller?.image"
+                                          class="attachment-shop_catalog size-shop_catalog"
+                                          alt=""
+                                          decoding="async"
+                                          style="
+                                            height: 264.44px;
+                                            width: 188.89px;
+                                            object-fit: scale-down;
+                                          "
+                                        />
+                                      </div>
+
+                                      <div class="group-action"></div>
+                                      <a
+                                        href="/book/"
+                                        class="woocommerce-LoopProduct-link woocommerce-loop-product__link"
+                                      ></a>
+                                    </div>
+                                    <div class="product-caption">
+                                      <h3
+                                        class="woocommerce-loop-product__title"
+                                      >
+                                        <a href="/book/">
+                                          {{ bestSeller?.name }}</a
+                                        >
+                                      </h3>
+                                      <div class="count-review">
+                                        <div
+                                          class="star-rating"
+                                          role="img"
+                                          aria-label="Rated 4.40 out of 5"
+                                        >
+                                          <span style="width: 88%"
+                                            >Rated
+                                            <strong class="rating">4.40</strong>
+                                            out of 5</span
+                                          >
+                                        </div>
+                                        <span>5</span>
+                                      </div>
+                                      <div
+                                        class="woocommerce-loop-product__author"
+                                      >
+                                        <a href="#" v-if="bestSeller?.author">
+                                          {{ bestSeller?.author }}
+                                        </a>
+
+                                        <a href="#" v-else>
+                                          Author Unavailable
+                                        </a>
+                                        <!-- @endif -->
+                                      </div>
+                                      <span class="price">
+                                        <span
+                                          class="woocommerce-Price-amount amount"
+                                        >
+                                          <bdi
+                                            ><span
+                                              class="woocommerce-Price-currencySymbol"
+                                              >KES </span
+                                            >{{ bestSeller?.price }}</bdi
+                                          >
+                                        </span>
+                                      </span>
+                                      <!-- @if($bestseller['stock'] >= 1) -->
+                                      <form
+                                        method="POST"
+                                        action="{{ route('cart.add') }}"
+                                      >
+                                        <!-- @csrf -->
+                                        <input
+                                          type="hidden"
+                                          name="product_id"
+                                          :value="bestSeller?.id"
+                                        />
+                                        <input
+                                          type="hidden"
+                                          name="quantity"
+                                          value="1"
+                                        />
+                                        <button type="submit">
+                                          Add to Cart
+                                        </button>
+                                      </form>
+                                      <!-- @else
+                    <button type="button">Sold Out</button>
+                    @endif -->
+                                    </div>
+                                  </div>
+                                </li>
                               </ul>
                             </div>
                           </div>
@@ -1270,13 +1386,46 @@
   </body>
 </template>
 
-<script setup>
-import { onMounted } from "vue";
+<script>
 import Footer from "./Footer.vue";
 import Header from "./Header.vue";
 import Deal from "./Deal.vue";
+// import BestSeller from "./BestSeller.vue";
+import axios from "axios";
+import { ref, onMounted , } from "vue";
 
-onMounted(() => {});
+export default {
+  components: {
+    Footer,
+    Header,
+    Deal,
+
+  },
+
+  setup() {
+    onMounted(() => {
+      getBestSeller();
+    });
+
+    const bestSellers = ref([]);
+    function getBestSeller() {
+      axios
+        .get("https://halfpricedbooks.co.ke/pos/booksApi/api/best_seller.php")
+        .then((response) => {
+          bestSellers.value = response.data.result;
+          console.log(response.data);
+          console.log(bestSellers.value);
+
+          setREVStartSize(e);
+        });
+    }
+
+    return {
+      bestSellers,
+      getBestSeller,
+    };
+  },
+};
 </script>
 <style>
 /*! elementor - v3.13.3 - 28-05-2023 */

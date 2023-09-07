@@ -1130,7 +1130,7 @@ export default {
                   Filter
                 </button>
 
-                <div class="price_label" style="display: none">
+                <div class="price_label" >
                   Price: between Ksh 0 and Ksh {{ minPrice }}
                 </div>
                 <div class="clear"></div>
