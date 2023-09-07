@@ -20,7 +20,8 @@ const routes = [
         name:'Home',
         component: Home
 
-    }
+    },
+    { path: '/best-seller-books', name: 'best-seller-books' , component: () => import('../Components/BestSellerBook.vue') },
 ]
 
 const router = createRouter({
